@@ -1,5 +1,3 @@
-import mermaid from "mermaid";
-
 export const SAMPLE = `gantt
   title Project Timeline
   dateFormat  YYYY-MM-DD
@@ -16,10 +14,12 @@ export const SAMPLE = `gantt
   section Launch
   Release        :milestone, 2026-03-26, 0d`;
 
-mermaid.initialize({
+export const MERMAID_THEMES = ["default", "dark", "forest", "neutral"] as const;
+export type MermaidTheme = (typeof MERMAID_THEMES)[number];
+
+export const DEFAULT_MERMAID_CONFIG = {
   startOnLoad: false,
-  theme: "default",
-  securityLevel: "loose",
+  securityLevel: "loose" as const,
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-});
+};

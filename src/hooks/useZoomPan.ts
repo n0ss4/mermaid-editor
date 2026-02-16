@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { parseSvgDimensions } from "../export/png";
 
 export function useZoomPan(resetTrigger: string) {
   const [zoom, setZoom] = useState(1);
@@ -6,11 +7,29 @@ export function useZoomPan(resetTrigger: string) {
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
   const panOffset = useRef({ x: 0, y: 0 });
+  const viewportRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setZoom(1);
+  const fitToView = useCallback(() => {
+    const vp = viewportRef.current;
+    if (!vp || !resetTrigger) {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+      return;
+    }
+    const vpW = vp.clientWidth;
+    const vpH = vp.clientHeight;
+    const { w: svgW, h: svgH } = parseSvgDimensions(resetTrigger);
+    const PADDING = 0.95;
+    const scaleX = (vpW / svgW) * PADDING;
+    const scaleY = (vpH / svgH) * PADDING;
+    const newZoom = Math.min(scaleX, scaleY, 1);
+    setZoom(Math.max(newZoom, 0.5));
     setPan({ x: 0, y: 0 });
   }, [resetTrigger]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => fitToView());
+  }, [fitToView]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -47,14 +66,11 @@ export function useZoomPan(resetTrigger: string) {
     () => setZoom((z) => Math.max(z - 0.25, 0.1)),
     []
   );
-  const fitToView = useCallback(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
 
   return {
     zoom,
     pan,
+    viewportRef,
     handlers: {
       onWheel: handleWheel,
       onPointerDown: handlePointerDown,

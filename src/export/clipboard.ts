@@ -2,7 +2,7 @@ import type { Exporter, ExportOptions } from "./types";
 import { parseSvgDimensions, renderToCanvas } from "./png";
 
 export const clipboardExporter: Exporter = {
-  name: "Clipboard",
+  name: "PNG",
   async export({ svgHtml, scale }: ExportOptions) {
     const { w, h } = parseSvgDimensions(svgHtml);
     const canvas = await renderToCanvas(svgHtml, w, h, scale);

@@ -1,5 +1,8 @@
 import React from "react";
+import { Download, Clipboard, Trash2 } from "lucide-react";
 import type { Exporter } from "../export/types";
+import { MERMAID_THEMES } from "../utils/constants";
+import type { MermaidTheme } from "../utils/constants";
 
 interface ToolbarProps {
   exporters: Exporter[];
@@ -8,6 +11,8 @@ interface ToolbarProps {
   onScaleChange: (scale: number) => void;
   onClear: () => void;
   canExport: boolean;
+  mermaidTheme: MermaidTheme;
+  onMermaidThemeChange: (theme: MermaidTheme) => void;
 }
 
 export function Toolbar({
@@ -17,6 +22,8 @@ export function Toolbar({
   onScaleChange,
   onClear,
   canExport,
+  mermaidTheme,
+  onMermaidThemeChange,
 }: ToolbarProps) {
   const handleExport = (exporter: Exporter) => {
     exporter.export({ svgHtml, scale: exportScale });
@@ -26,19 +33,37 @@ export function Toolbar({
     <div className="toolbar">
       {exporters.map((exp) => (
         <button
-          key={exp.name}
+          key={exp.name + (exp.extension || "")}
           className="btn-primary"
           onClick={() => handleExport(exp)}
           disabled={!canExport}
         >
-          {exp.extension ? `Export ${exp.name}` : `Copy to ${exp.name}`}
+          {exp.extension ? (
+            <><Download size={14} /> Export {exp.name}</>
+          ) : (
+            <><Clipboard size={14} /> Copy {exp.name}</>
+          )}
         </button>
       ))}
       <button className="btn-secondary" onClick={onClear}>
-        Clear
+        <Trash2 size={14} /> Clear
       </button>
       <div className="scale-select">
-        <label htmlFor="export-scale">Export scale</label>
+        <label htmlFor="mermaid-theme">Theme</label>
+        <select
+          id="mermaid-theme"
+          value={mermaidTheme}
+          onChange={(e) => onMermaidThemeChange(e.target.value as MermaidTheme)}
+        >
+          {MERMAID_THEMES.map((t) => (
+            <option key={t} value={t}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="scale-select">
+        <label htmlFor="export-scale">Scale</label>
         <select
           id="export-scale"
           value={exportScale}

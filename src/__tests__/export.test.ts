@@ -1,5 +1,6 @@
 import { test, expect, describe } from "bun:test";
 import { parseSvgDimensions } from "../export/png";
+import { clipboardSvgExporter } from "../export/clipboard-svg";
 
 describe("parseSvgDimensions", () => {
   test("parses viewBox dimensions", () => {
@@ -52,5 +53,12 @@ describe("scale multiplication", () => {
     const h = 768;
     expect(w * 1).toBe(1024);
     expect(h * 1).toBe(768);
+  });
+});
+
+describe("clipboardSvgExporter", () => {
+  test("has correct name and no extension", () => {
+    expect(clipboardSvgExporter.name).toBe("SVG");
+    expect(clipboardSvgExporter.extension).toBeUndefined();
   });
 });
