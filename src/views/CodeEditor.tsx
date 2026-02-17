@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, type DragEvent } from "react";
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState, StateEffect, StateField } from "@codemirror/state";
 import { Decoration, type DecorationSet } from "@codemirror/view";
@@ -33,9 +33,9 @@ const errorLineField = StateField.define<DecorationSet>({
 });
 
 interface CodeEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-  error?: string;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly error?: string;
 }
 
 export function CodeEditor({ value, onChange, error }: CodeEditorProps) {
@@ -64,7 +64,7 @@ export function CodeEditor({ value, onChange, error }: CodeEditorProps) {
   );
 
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    (e: DragEvent) => {
       e.preventDefault();
       const file = e.dataTransfer.files[0];
       if (file) handleFile(file);

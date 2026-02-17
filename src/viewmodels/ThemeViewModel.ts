@@ -11,7 +11,7 @@ export function useThemeViewModel(storage: IStorageService): ThemeViewModelValue
   const [theme, setTheme] = useState<Theme>(() => storage.loadTheme());
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.dataset.theme = theme;
     storage.saveTheme(theme);
   }, [theme, storage]);
 

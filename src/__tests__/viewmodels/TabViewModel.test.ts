@@ -1,8 +1,8 @@
 import { test, expect, describe } from "bun:test";
 import { tabReducer, createTab } from "../../models";
-import type { Tab, TabState } from "../../models";
+import type { Tab } from "../../models";
 
-function makeState(tabs: Tab[], activeTabId?: string): TabState {
+function makeState(tabs: Tab[], activeTabId?: string) {
   return { tabs, activeTabId: activeTabId ?? tabs[0]?.id ?? "" };
 }
 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useTabViewModel } from "../TabViewModel";
 import type { TabViewModelValue } from "../TabViewModel";
 import { useServices } from "./ServiceProvider";
@@ -11,7 +11,7 @@ export function useTabVM(): TabViewModelValue {
   return ctx;
 }
 
-export function TabProvider({ children }: { children: React.ReactNode }) {
+export function TabProvider({ children }: { readonly children: ReactNode }) {
   const { storage } = useServices();
   const vm = useTabViewModel(storage);
 

@@ -1,13 +1,10 @@
-import React from "react";
 import { LayoutGrid, Share2 } from "lucide-react";
-import { useEditorVM } from "../viewmodels";
-import { useExportViewModel } from "../viewmodels";
-import { useServices } from "../viewmodels";
+import { useEditorVM, useExportViewModel, useServices } from "../viewmodels";
 import { ExportDropdown } from "./ExportDropdown";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface HeaderProps {
-  onShowTemplates: () => void;
+  readonly onShowTemplates: () => void;
 }
 
 export function Header({ onShowTemplates }: HeaderProps) {

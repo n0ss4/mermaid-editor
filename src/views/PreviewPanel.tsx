@@ -1,11 +1,10 @@
-import React from "react";
 import { ZoomIn, ZoomOut, Scan, Maximize, Minimize } from "lucide-react";
 import type { PreviewViewModelValue } from "../viewmodels";
 
 interface PreviewPanelProps {
-  preview: PreviewViewModelValue;
-  svgHtml: string;
-  error: string;
+  readonly preview: PreviewViewModelValue;
+  readonly svgHtml: string;
+  readonly error: string;
 }
 
 export function PreviewPanel({ preview, svgHtml, error }: PreviewPanelProps) {
@@ -58,9 +57,8 @@ export function PreviewPanel({ preview, svgHtml, error }: PreviewPanelProps) {
         onPointerMove={handlers.onPointerMove}
         onPointerUp={handlers.onPointerUp}
       >
-        {error ? (
-          <p className="error-msg">{error}</p>
-        ) : svgHtml ? (
+        {error && <p className="error-msg">{error}</p>}
+        {!error && svgHtml && (
           <div
             className="preview-canvas"
             style={{
@@ -68,7 +66,8 @@ export function PreviewPanel({ preview, svgHtml, error }: PreviewPanelProps) {
             }}
             dangerouslySetInnerHTML={{ __html: svgHtml }}
           />
-        ) : (
+        )}
+        {!error && !svgHtml && (
           <p className="placeholder">Diagram will appear here</p>
         )}
       </div>

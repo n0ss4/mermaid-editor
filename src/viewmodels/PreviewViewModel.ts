@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type RefObject, type WheelEvent, type PointerEvent } from "react";
 import { parseSvgDimensions } from "../models";
 
 export interface PreviewViewModelValue {
   zoom: number;
   pan: { x: number; y: number };
-  viewportRef: React.RefObject<HTMLDivElement | null>;
+  viewportRef: RefObject<HTMLDivElement | null>;
   handlers: {
-    onWheel: (e: React.WheelEvent) => void;
-    onPointerDown: (e: React.PointerEvent) => void;
-    onPointerMove: (e: React.PointerEvent) => void;
+    onWheel: (e: WheelEvent) => void;
+    onPointerDown: (e: PointerEvent) => void;
+    onPointerMove: (e: PointerEvent) => void;
     onPointerUp: () => void;
   };
   controls: {
@@ -57,18 +57,18 @@ export function usePreviewViewModel(svgHtml: string): PreviewViewModelValue {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsFullscreen(false);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, [isFullscreen]);
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     setZoom((z) => Math.min(Math.max(0.1, z + delta), 10));
   }, []);
 
   const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       isPanning.current = true;
       panStart.current = { x: e.clientX, y: e.clientY };
       panOffset.current = { ...pan };
@@ -77,7 +77,7 @@ export function usePreviewViewModel(svgHtml: string): PreviewViewModelValue {
     [pan]
   );
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!isPanning.current) return;
     const dx = e.clientX - panStart.current.x;
     const dy = e.clientY - panStart.current.y;

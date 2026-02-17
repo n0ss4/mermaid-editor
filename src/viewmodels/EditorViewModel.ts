@@ -17,23 +17,30 @@ export interface EditorViewModelValue {
   handleTemplateSelect: (templateCode: string) => void;
 }
 
-export function useEditorViewModel(
-  activeTabId: string,
-  activeCode: string,
-  activeMermaidTheme: MermaidTheme,
-  activeExportScale: number,
-  updateTab: (id: string, changes: Record<string, unknown>) => void,
-  renderService: IRenderService,
-  shareService: IShareService,
-  clipboardService: IClipboardService,
-): EditorViewModelValue {
+interface EditorViewModelDeps {
+  activeTabId: string;
+  activeCode: string;
+  activeMermaidTheme: MermaidTheme;
+  activeExportScale: number;
+  updateTab: (id: string, changes: Record<string, unknown>) => void;
+  renderService: IRenderService;
+  shareService: IShareService;
+  clipboardService: IClipboardService;
+}
+
+export function useEditorViewModel({
+  activeTabId,
+  activeCode,
+  activeMermaidTheme,
+  activeExportScale,
+  updateTab,
+  renderService,
+  shareService,
+  clipboardService,
+}: EditorViewModelDeps): EditorViewModelValue {
   const [svgHtml, setSvgHtml] = useState("");
   const [error, setError] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  const code = activeCode;
-  const mermaidTheme = activeMermaidTheme;
-  const exportScale = activeExportScale;
 
   const setCode = useCallback(
     (c: string) => updateTab(activeTabId, { code: c }),
@@ -53,19 +60,19 @@ export function useEditorViewModel(
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      const result = await renderService.render(code, mermaidTheme);
+      const result = await renderService.render(activeCode, activeMermaidTheme);
       setSvgHtml(result.svg);
       setError(result.error);
     }, 400);
     return () => clearTimeout(debounceRef.current);
-  }, [code, mermaidTheme, renderService]);
+  }, [activeCode, activeMermaidTheme, renderService]);
 
-  const diagramType = detectDiagramType(code);
+  const diagramType = detectDiagramType(activeCode);
 
   const handleShare = useCallback(() => {
-    const url = shareService.encodeAndApply({ code, mermaidTheme });
+    const url = shareService.encodeAndApply({ code: activeCode, mermaidTheme: activeMermaidTheme });
     clipboardService.writeText(url);
-  }, [code, mermaidTheme, shareService, clipboardService]);
+  }, [activeCode, activeMermaidTheme, shareService, clipboardService]);
 
   const handleTemplateSelect = useCallback(
     (templateCode: string) => {
@@ -75,14 +82,14 @@ export function useEditorViewModel(
   );
 
   return {
-    code,
+    code: activeCode,
     setCode,
     svgHtml,
     error,
     diagramType,
-    mermaidTheme,
+    mermaidTheme: activeMermaidTheme,
     setMermaidTheme,
-    exportScale,
+    exportScale: activeExportScale,
     setExportScale,
     handleShare,
     handleTemplateSelect,

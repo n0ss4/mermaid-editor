@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useEditorViewModel } from "../EditorViewModel";
 import type { EditorViewModelValue } from "../EditorViewModel";
 import { useServices } from "./ServiceProvider";
@@ -12,20 +12,20 @@ export function useEditorVM(): EditorViewModelValue {
   return ctx;
 }
 
-export function EditorProvider({ children }: { children: React.ReactNode }) {
+export function EditorProvider({ children }: { readonly children: ReactNode }) {
   const { render, share, clipboard } = useServices();
   const { activeTabId, activeTab, updateTab } = useTabVM();
 
-  const vm = useEditorViewModel(
+  const vm = useEditorViewModel({
     activeTabId,
-    activeTab.code,
-    activeTab.mermaidTheme,
-    activeTab.exportScale,
+    activeCode: activeTab.code,
+    activeMermaidTheme: activeTab.mermaidTheme,
+    activeExportScale: activeTab.exportScale,
     updateTab,
-    render,
-    share,
-    clipboard,
-  );
+    renderService: render,
+    shareService: share,
+    clipboardService: clipboard,
+  });
 
   return (
     <EditorContext.Provider value={vm}>

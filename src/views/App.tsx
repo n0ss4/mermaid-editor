@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { MermaidTheme } from "../models";
 import { useEditorVM, useTabVM, useServices, usePreviewViewModel, useUrlHydration, useKeyboardShortcuts } from "../viewmodels";
 import { Header } from "./Header";
@@ -9,7 +9,7 @@ import { ResizeHandle } from "./ResizeHandle";
 import { TemplateGallery } from "./TemplateGallery";
 
 export function App() {
-  const { tabs, activeTabId, activeTab, addTab, closeTab, setActive, updateTab } = useTabVM();
+  const { tabs, activeTabId, addTab, closeTab, setActive, updateTab } = useTabVM();
   const editor = useEditorVM();
   const { share } = useServices();
   const preview = usePreviewViewModel(editor.svgHtml);

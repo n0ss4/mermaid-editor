@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import type { ShareState, ExportOptions } from "../models";
 import type { IShareService } from "../services";
 import { pngExporter } from "../export/png";
@@ -9,7 +9,7 @@ export function useUrlHydration(
   const ref = useRef<ShareState | null>(undefined as unknown as ShareState | null);
 
   if (ref.current === undefined) {
-    ref.current = shareService.decodeFromUrl(window.location.href);
+    ref.current = shareService.decodeFromUrl(globalThis.location.href);
   }
 
   useEffect(() => {
@@ -69,11 +69,10 @@ export function useKeyboardShortcuts({
       if (e.shiftKey && e.key === "]") {
         e.preventDefault();
         onNextTab();
-        return;
       }
     };
 
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
+    return () => globalThis.removeEventListener("keydown", handler);
   }, [onNewTab, onCloseTab, onPrevTab, onNextTab, getExportOptions]);
 }

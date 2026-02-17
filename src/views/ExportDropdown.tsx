@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Download, Clipboard } from "lucide-react";
 import type { Exporter, MermaidTheme } from "../models";
 import { MERMAID_THEMES } from "../models";
 import type { ExportViewModelValue } from "../viewmodels";
 
 interface ExportDropdownProps {
-  vm: ExportViewModelValue;
-  exportScale: number;
-  onScaleChange: (scale: number) => void;
-  mermaidTheme: MermaidTheme;
-  onMermaidThemeChange: (theme: MermaidTheme) => void;
+  readonly vm: ExportViewModelValue;
+  readonly exportScale: number;
+  readonly onScaleChange: (scale: number) => void;
+  readonly mermaidTheme: MermaidTheme;
+  readonly onMermaidThemeChange: (theme: MermaidTheme) => void;
 }
 
 export function ExportDropdown({

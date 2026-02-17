@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Plus, X } from "lucide-react";
 import { useTabVM } from "../viewmodels";
 
@@ -15,7 +15,7 @@ export function TabBar() {
         el.focus();
         const range = document.createRange();
         range.selectNodeContents(el);
-        const sel = window.getSelection();
+        const sel = globalThis.getSelection();
         sel?.removeAllRanges();
         sel?.addRange(range);
       }
@@ -35,13 +35,22 @@ export function TabBar() {
   );
 
   return (
-    <div className="tab-bar">
+    <div className="tab-bar" role="tablist">
       <div className="tab-bar-scroll">
         {tabs.map((tab) => (
           <div
             key={tab.id}
+            role="tab"
+            tabIndex={0}
+            aria-selected={tab.id === activeTabId}
             className={`tab${tab.id === activeTabId ? " tab-active" : ""}`}
             onClick={() => setActive(tab.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setActive(tab.id);
+              }
+            }}
             onDoubleClick={() => handleDoubleClick(tab.id)}
           >
             {editingId === tab.id ? (

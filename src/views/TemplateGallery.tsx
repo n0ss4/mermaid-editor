@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import mermaid from "mermaid";
 import { TEMPLATES } from "../utils/templates";
 import { DEFAULT_MERMAID_CONFIG } from "../utils/constants";
 
 interface TemplateGalleryProps {
-  onSelect: (code: string) => void;
-  onClose: () => void;
+  readonly onSelect: (code: string) => void;
+  readonly onClose: () => void;
 }
 
 export function TemplateGallery({ onSelect, onClose }: TemplateGalleryProps) {
@@ -27,7 +27,7 @@ export function TemplateGallery({ onSelect, onClose }: TemplateGalleryProps) {
           if (!cancelled) {
             setRendered(new Map(cacheRef.current));
           }
-        } catch {}
+        } catch { /* template render failures are expected and silently skipped */ }
       }
     }
     renderAll();
@@ -35,7 +35,7 @@ export function TemplateGallery({ onSelect, onClose }: TemplateGalleryProps) {
   }, []);
 
   return (
-    <div className="template-overlay" onClick={onClose}>
+    <div className="template-overlay" role="presentation" onClick={onClose}>
       <div className="template-modal" onClick={(e) => e.stopPropagation()}>
         <div className="template-header">
           <h2>Templates</h2>

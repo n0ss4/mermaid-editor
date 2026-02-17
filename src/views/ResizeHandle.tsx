@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type PointerEvent } from "react";
 
 interface ResizeHandleProps {
-  onResize: (fraction: number) => void;
+  readonly onResize: (fraction: number) => void;
 }
 
 export function ResizeHandle({ onResize }: ResizeHandleProps) {
@@ -9,7 +9,7 @@ export function ResizeHandle({ onResize }: ResizeHandleProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       e.preventDefault();
       setDragging(true);
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -18,7 +18,7 @@ export function ResizeHandle({ onResize }: ResizeHandleProps) {
   );
 
   const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       if (!dragging) return;
       const layout = containerRef.current?.parentElement;
       if (!layout) return;

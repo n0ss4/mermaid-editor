@@ -5,7 +5,7 @@ import { encodeShareUrl, decodeShareUrl } from "../utils/sharing";
 export class ShareService implements IShareService {
   encodeAndApply(state: ShareState): string {
     const url = encodeShareUrl(state);
-    window.history.replaceState(null, "", url);
+    globalThis.history.replaceState(null, "", url);
     return url;
   }
 
@@ -14,8 +14,8 @@ export class ShareService implements IShareService {
   }
 
   clearUrlParams(): void {
-    const url = new URL(window.location.href);
+    const url = new URL(globalThis.location.href);
     url.search = "";
-    window.history.replaceState(null, "", url.toString());
+    globalThis.history.replaceState(null, "", url.toString());
   }
 }

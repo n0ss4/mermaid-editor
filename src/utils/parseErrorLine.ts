@@ -10,9 +10,9 @@ const LINE_PATTERNS = [
 export function parseErrorLine(error: string): number | null {
   if (!error) return null;
   for (const pattern of LINE_PATTERNS) {
-    const match = error.match(pattern);
+    const match = pattern.exec(error);
     if (match) {
-      const line = parseInt(match[1]!, 10);
+      const line = Number.parseInt(match[1]!, 10);
       if (line > 0) return line;
     }
   }

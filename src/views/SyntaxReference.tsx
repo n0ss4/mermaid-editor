@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { SYNTAX_REFERENCE } from "../utils/syntaxReference";
 import type { DiagramType } from "../models";
 
 interface SyntaxReferenceProps {
-  diagramType: DiagramType;
+  readonly diagramType: DiagramType;
 }
 
 export function SyntaxReference({ diagramType }: SyntaxReferenceProps) {

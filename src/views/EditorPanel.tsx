@@ -1,4 +1,3 @@
-import React from "react";
 import { useEditorVM } from "../viewmodels";
 import { CodeEditor } from "./CodeEditor";
 import { SyntaxReference } from "./SyntaxReference";

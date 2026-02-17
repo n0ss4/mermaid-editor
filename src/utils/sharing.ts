@@ -11,7 +11,7 @@ interface ShareState {
 export function encodeShareUrl(state: ShareState): string {
   const data = JSON.stringify(state);
   const compressed = compressToEncodedURIComponent(data);
-  const url = new URL(window.location.href);
+  const url = new URL(globalThis.location.href);
   url.search = "";
   url.searchParams.set("d", compressed);
   return url.toString();
@@ -27,7 +27,7 @@ export function decodeShareUrl(url: string): ShareState | null {
     const state = JSON.parse(json);
     if (!state || typeof state.code !== "string") return null;
     return state;
-  } catch {
+  } catch { /* malformed share URL */
     return null;
   }
 }

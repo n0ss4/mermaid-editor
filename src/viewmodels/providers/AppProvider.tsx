@@ -1,4 +1,4 @@
-import React from "react";
+import type { ReactNode } from "react";
 import type { ServiceRegistry } from "../../services";
 import { ServiceProvider } from "./ServiceProvider";
 import { ThemeProvider } from "./ThemeProvider";
@@ -9,8 +9,8 @@ export function AppProvider({
   registry,
   children,
 }: {
-  registry: ServiceRegistry;
-  children: React.ReactNode;
+  readonly registry: ServiceRegistry;
+  readonly children: ReactNode;
 }) {
   return (
     <ServiceProvider registry={registry}>
