@@ -5,9 +5,11 @@ import { Decoration, type DecorationSet, gutter, GutterMarker } from "@codemirro
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
+import { search, searchKeymap } from "@codemirror/search";
 import { Upload, AlertTriangle } from "lucide-react";
 import { useThemeVM } from "../viewmodels";
 import { mermaid } from "../lang/mermaid-lang";
+import { mermaidAutocomplete } from "../lang/mermaid-completions";
 import { parseErrorLine } from "../utils/parseErrorLine";
 import { formatError } from "../utils/formatError";
 
@@ -119,7 +121,9 @@ export function CodeEditor({ value, onChange, error }: CodeEditorProps) {
     const extensions = [
       basicSetup,
       mermaid(),
-      keymap.of([indentWithTab]),
+      mermaidAutocomplete(),
+      search(),
+      keymap.of([...searchKeymap, indentWithTab]),
       updateListener,
       EditorView.lineWrapping,
       errorLineField,

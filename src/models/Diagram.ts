@@ -9,6 +9,17 @@ export type DiagramType =
   | "git"
   | "mindmap"
   | "timeline"
+  | "c4"
+  | "architecture"
+  | "block"
+  | "requirement"
+  | "quadrant"
+  | "sankey"
+  | "xychart"
+  | "radar"
+  | "kanban"
+  | "journey"
+  | "packet"
   | "unknown";
 
 const DIAGRAM_PATTERNS: [RegExp, DiagramType][] = [
@@ -22,6 +33,17 @@ const DIAGRAM_PATTERNS: [RegExp, DiagramType][] = [
   [/^gitGraph\b/i, "git"],
   [/^mindmap\b/i, "mindmap"],
   [/^timeline\b/i, "timeline"],
+  [/^C4Context\b|^C4Container\b|^C4Component\b|^C4Dynamic\b|^C4Deployment\b/i, "c4"],
+  [/^architecture-beta\b/i, "architecture"],
+  [/^block-beta\b/i, "block"],
+  [/^requirementDiagram\b/i, "requirement"],
+  [/^quadrantChart\b/i, "quadrant"],
+  [/^sankey-beta\b/i, "sankey"],
+  [/^xychart-beta\b/i, "xychart"],
+  [/^radar-beta\b/i, "radar"],
+  [/^kanban\b/i, "kanban"],
+  [/^journey\b/i, "journey"],
+  [/^packet-beta\b/i, "packet"],
 ];
 
 export function detectDiagramType(code: string): DiagramType {

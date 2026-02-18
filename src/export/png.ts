@@ -7,7 +7,8 @@ export function renderToCanvas(
   svgHtml: string,
   w: number,
   h: number,
-  scale: number
+  scale: number,
+  transparent = false
 ): Promise<HTMLCanvasElement> {
   const container = document.createElement("div");
   container.innerHTML = svgHtml;
@@ -28,8 +29,10 @@ export function renderToCanvas(
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (!transparent) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
       resolve(canvas);
@@ -41,9 +44,9 @@ export function renderToCanvas(
 export const pngExporter: Exporter = {
   name: "PNG",
   extension: "png",
-  async export({ svgHtml, scale }: ExportOptions) {
+  async export({ svgHtml, scale, transparent }: ExportOptions) {
     const { w, h } = parseSvgDimensions(svgHtml);
-    const canvas = await renderToCanvas(svgHtml, w, h, scale);
+    const canvas = await renderToCanvas(svgHtml, w, h, scale, transparent);
 
     canvas.toBlob(
       (pngBlob) => {

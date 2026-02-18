@@ -1,7 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import type { MermaidTheme } from "../models";
+import type { Command } from "../models/Command";
 import { useEditorVM, useTabVM, useServices, usePreviewViewModel, useUrlHydration, useKeyboardShortcuts } from "../viewmodels";
+import { useCommandPaletteViewModel } from "../viewmodels/CommandPaletteViewModel";
+import { useHistoryViewModel } from "../viewmodels/HistoryViewModel";
+import { useCustomTemplateViewModel } from "../viewmodels/CustomTemplateViewModel";
 import { Header } from "./Header";
 import { TabBar } from "./TabBar";
 import { EditorPanel } from "./EditorPanel";
@@ -10,15 +14,26 @@ import { ResizeHandle } from "./ResizeHandle";
 import { PanelToggle } from "./PanelToggle";
 import { TemplateGallery } from "./TemplateGallery";
 import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
+import { CommandPalette } from "./CommandPalette";
+import { HistoryPanel } from "./HistoryPanel";
+import { pngExporter } from "../export/png";
+import { pdfExporter } from "../export/pdf";
+import { exportAllTabsAsZip } from "../export/batch";
+
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
+const mod = isMac ? "\u2318" : "Ctrl";
+const alt = isMac ? "\u2325" : "Alt";
 
 export function App() {
   const { tabs, activeTabId, addTab, closeTab, setActive, updateTab } = useTabVM();
   const editor = useEditorVM();
-  const { share } = useServices();
+  const { share, render: renderService, history: historyService, customTemplates: customTemplateService } = useServices();
   const preview = usePreviewViewModel(editor.svgHtml);
+  const customTemplateVM = useCustomTemplateViewModel(customTemplateService);
 
   const [showTemplates, setShowTemplates] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [splitFraction, setSplitFraction] = useState(0.42);
   const [activePanel, setActivePanel] = useState<"editor" | "preview">("editor");
 
@@ -36,6 +51,14 @@ export function App() {
     }
   }, [shared, activeTabId, updateTab]);
 
+  // History
+  const historyVM = useHistoryViewModel(
+    activeTabId,
+    editor.code,
+    historyService,
+    (code: string) => editor.setCode(code),
+  );
+
   // Keyboard shortcuts
   const handleNewTab = useCallback(() => addTab(), [addTab]);
   const handleCloseTab = useCallback(() => closeTab(activeTabId), [closeTab, activeTabId]);
@@ -49,9 +72,35 @@ export function App() {
   }, [tabs, activeTabId, setActive]);
   const getExportOptions = useCallback(() => {
     if (!editor.svgHtml) return null;
-    return { svgHtml: editor.svgHtml, scale: editor.exportScale };
-  }, [editor.svgHtml, editor.exportScale]);
+    return { svgHtml: editor.svgHtml, scale: editor.exportScale, transparent: editor.transparentBg };
+  }, [editor.svgHtml, editor.exportScale, editor.transparentBg]);
   const handleShowShortcuts = useCallback(() => setShowShortcuts(true), []);
+
+  // Command palette commands
+  const commands: Command[] = useMemo(() => [
+    { id: "new-tab", label: "New Tab", category: "Tabs", shortcut: [alt, "N"], action: handleNewTab },
+    { id: "close-tab", label: "Close Tab", category: "Tabs", shortcut: [alt, "W"], action: handleCloseTab },
+    { id: "prev-tab", label: "Previous Tab", category: "Tabs", shortcut: [mod, "Shift", "["], action: handlePrevTab },
+    { id: "next-tab", label: "Next Tab", category: "Tabs", shortcut: [mod, "Shift", "]"], action: handleNextTab },
+    { id: "export-png", label: "Export PNG", category: "Export", shortcut: [alt, "S"], action: () => { const opts = getExportOptions(); if (opts) pngExporter.export(opts); } },
+    { id: "export-pdf", label: "Export PDF", category: "Export", shortcut: [alt, "Shift", "S"], action: () => { const opts = getExportOptions(); if (opts) pdfExporter.export(opts); } },
+    { id: "export-all", label: "Export All (ZIP)", category: "Export", action: () => { exportAllTabsAsZip(tabs, renderService, { scale: editor.exportScale, transparent: editor.transparentBg }); } },
+    { id: "toggle-transparent", label: "Toggle Transparent Background", category: "Export", shortcut: [alt, "T"], action: () => editor.setTransparentBg(!editor.transparentBg) },
+    { id: "zoom-in", label: "Zoom In", category: "View", shortcut: [alt, "+"], action: preview.controls.zoomIn },
+    { id: "zoom-out", label: "Zoom Out", category: "View", shortcut: [alt, "\u2212"], action: preview.controls.zoomOut },
+    { id: "zoom-fit", label: "Fit to View", category: "View", shortcut: [alt, "0"], action: preview.controls.fitToView },
+    { id: "zoom-width", label: "Fit to Width", category: "View", action: preview.controls.fitToWidth },
+    { id: "fullscreen", label: "Toggle Fullscreen", category: "View", action: preview.toggleFullscreen },
+    { id: "templates", label: "Open Templates", category: "General", action: () => setShowTemplates(true) },
+    { id: "save-template", label: "Save as Template", category: "General", shortcut: [alt, "Shift", "T"], action: () => {
+      const name = prompt("Template name:");
+      if (name?.trim()) customTemplateVM.saveTemplate(name.trim(), editor.code);
+    }},
+    { id: "history", label: "Version History", category: "General", shortcut: [alt, "H"], action: () => setShowHistory(true) },
+    { id: "shortcuts", label: "Keyboard Shortcuts", category: "General", shortcut: [mod, "/"], action: handleShowShortcuts },
+  ], [handleNewTab, handleCloseTab, handlePrevTab, handleNextTab, getExportOptions, preview.controls, preview.toggleFullscreen, handleShowShortcuts, tabs, renderService, editor, customTemplateVM]);
+
+  const commandPalette = useCommandPaletteViewModel(commands);
 
   useKeyboardShortcuts({
     onNewTab: handleNewTab,
@@ -63,6 +112,14 @@ export function App() {
     onZoomReset: preview.controls.fitToView,
     onShowShortcuts: handleShowShortcuts,
     getExportOptions,
+    onCommandPalette: commandPalette.toggle,
+    onToggleTransparent: () => editor.setTransparentBg(!editor.transparentBg),
+    onExportPdf: () => { const opts = getExportOptions(); if (opts) pdfExporter.export(opts); },
+    onShowHistory: () => setShowHistory(true),
+    onSaveTemplate: () => {
+      const name = prompt("Template name:");
+      if (name?.trim()) customTemplateVM.saveTemplate(name.trim(), editor.code);
+    },
   });
 
   const gridColumns = `${splitFraction}fr 8px ${1 - splitFraction}fr`;
@@ -106,11 +163,19 @@ export function App() {
         <TemplateGallery
           onSelect={editor.handleTemplateSelect}
           onClose={() => setShowTemplates(false)}
+          customTemplates={customTemplateVM.customTemplates}
+          onDeleteCustom={customTemplateVM.deleteTemplate}
+          onSaveCurrent={(name) => customTemplateVM.saveTemplate(name, editor.code)}
+          currentCode={editor.code}
         />
       )}
       {showShortcuts && (
         <KeyboardShortcutsModal onClose={() => setShowShortcuts(false)} />
       )}
+      {showHistory && (
+        <HistoryPanel vm={historyVM} onClose={() => setShowHistory(false)} />
+      )}
+      <CommandPalette vm={commandPalette} />
     </>
   );
 }

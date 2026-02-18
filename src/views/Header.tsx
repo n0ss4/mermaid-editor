@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { LayoutGrid, Share2, Keyboard, Menu } from "lucide-react";
-import { useEditorVM, useExportViewModel, useServices } from "../viewmodels";
+import { useEditorVM, useExportViewModel, useServices, useTabVM } from "../viewmodels";
 import { useToast } from "../viewmodels/providers/ToastProvider";
 import { ExportDropdown } from "./ExportDropdown";
 import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "./ThemeToggle";
+import { exportAllTabsAsZip } from "../export/batch";
 import type { Exporter } from "../models";
 
 interface HeaderProps {
@@ -14,8 +15,9 @@ interface HeaderProps {
 
 export function Header({ onShowTemplates, onShowShortcuts }: HeaderProps) {
   const editor = useEditorVM();
-  const { export: exportService } = useServices();
-  const exportVM = useExportViewModel(editor.svgHtml, editor.exportScale, exportService);
+  const { export: exportService, render: renderService } = useServices();
+  const { tabs } = useTabVM();
+  const exportVM = useExportViewModel(editor.svgHtml, editor.exportScale, exportService, editor.transparentBg);
   const { showToast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -33,6 +35,13 @@ export function Header({ onShowTemplates, onShowShortcuts }: HeaderProps) {
     }
   };
 
+  const handleBatchExport = useCallback(() => {
+    exportAllTabsAsZip(tabs, renderService, {
+      scale: editor.exportScale,
+      transparent: editor.transparentBg,
+    });
+  }, [tabs, renderService, editor.exportScale, editor.transparentBg]);
+
   return (
     <header className="app-header">
       <h1>Mermaid Editor</h1>
@@ -47,7 +56,12 @@ export function Header({ onShowTemplates, onShowShortcuts }: HeaderProps) {
           <Share2 size={14} /> Share
         </button>
         <div className="header-desktop-only">
-          <ExportDropdown vm={exportVM} />
+          <ExportDropdown
+            vm={exportVM}
+            transparentBg={editor.transparentBg}
+            onToggleTransparent={() => editor.setTransparentBg(!editor.transparentBg)}
+            onBatchExport={handleBatchExport}
+          />
         </div>
         <button
           className="btn-icon header-desktop-only"

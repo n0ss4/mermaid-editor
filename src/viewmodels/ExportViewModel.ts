@@ -12,6 +12,7 @@ export function useExportViewModel(
   svgHtml: string,
   exportScale: number,
   exportService: IExportService,
+  transparent = false,
 ): ExportViewModelValue {
   const exporters = exportService.getExporters();
   const canExport = !!svgHtml;
@@ -19,9 +20,9 @@ export function useExportViewModel(
   const runExport = useCallback(
     (exporter: Exporter) => {
       if (!svgHtml) return;
-      exportService.runExport(exporter, { svgHtml, scale: exportScale });
+      exportService.runExport(exporter, { svgHtml, scale: exportScale, transparent });
     },
-    [svgHtml, exportScale, exportService]
+    [svgHtml, exportScale, transparent, exportService]
   );
 
   return { exporters, canExport, runExport };

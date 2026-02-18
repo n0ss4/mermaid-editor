@@ -15,6 +15,8 @@ export interface EditorViewModelValue {
   setMermaidTheme: (theme: MermaidTheme) => void;
   exportScale: number;
   setExportScale: (scale: number) => void;
+  transparentBg: boolean;
+  setTransparentBg: (v: boolean) => void;
   handleShare: () => void;
   handleTemplateSelect: (templateCode: string) => void;
 }
@@ -42,6 +44,7 @@ export function useEditorViewModel({
 }: EditorViewModelDeps): EditorViewModelValue {
   const [svgHtml, setSvgHtml] = useState("");
   const [error, setError] = useState("");
+  const [transparentBg, setTransparentBg] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const setCode = useCallback(
@@ -95,6 +98,8 @@ export function useEditorViewModel({
     setMermaidTheme,
     exportScale: activeExportScale,
     setExportScale,
+    transparentBg,
+    setTransparentBg,
     handleShare,
     handleTemplateSelect,
   };

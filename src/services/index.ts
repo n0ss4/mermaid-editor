@@ -5,6 +5,8 @@ export type {
   IExportService,
   IFileService,
   IClipboardService,
+  IHistoryService,
+  ICustomTemplateService,
 } from "./interfaces";
 
 export { StorageService } from "./StorageService";
@@ -13,6 +15,8 @@ export { ShareService } from "./ShareService";
 export { ExportService } from "./ExportService";
 export { FileService } from "./FileService";
 export { ClipboardService } from "./ClipboardService";
+export { HistoryService } from "./HistoryService";
+export { CustomTemplateService } from "./CustomTemplateService";
 
 export type { ServiceRegistry } from "./registry";
 export { createServiceRegistry } from "./registry";

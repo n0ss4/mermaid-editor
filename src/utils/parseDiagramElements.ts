@@ -300,6 +300,147 @@ function parseTimeline(code: string): ParsedElement[] {
   return elements;
 }
 
+function parseC4(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  // Person, System, Container, Component, etc.
+  for (const m of code.matchAll(/^\s*(?:Person|Person_Ext|System|System_Ext|Container|Container_Ext|ContainerDb|Component|Component_Ext)\s*\(\s*(\w+)\s*,\s*"([^"]+)"/gm)) {
+    elements.push({ kind: m[0]!.trim().split("(")[0]!, name: m[2]!, detail: m[1] });
+  }
+  // Boundaries
+  for (const m of code.matchAll(/^\s*(?:System_Boundary|Container_Boundary)\s*\(\s*(\w+)\s*,\s*"([^"]+)"/gm)) {
+    elements.push({ kind: "Boundary", name: m[2]!, detail: m[1] });
+  }
+  // Relationships
+  for (const m of code.matchAll(/^\s*(?:Rel|Rel_D|Rel_U|Rel_L|Rel_R|BiRel)\s*\(\s*(\w+)\s*,\s*(\w+)\s*,\s*"([^"]+)"/gm)) {
+    elements.push({ kind: "Relationship", name: `${m[1]} -> ${m[2]}`, detail: m[3] });
+  }
+  return elements;
+}
+
+function parseArchitecture(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  for (const m of code.matchAll(/^\s*group\s+(\w+)(?:\([^)]*\))?\[([^\]]*)\]/gm)) {
+    elements.push({ kind: "Group", name: m[2]?.trim() || m[1]! });
+  }
+  for (const m of code.matchAll(/^\s*service\s+(\w+)(?:\([^)]*\))?\[([^\]]*)\]/gm)) {
+    elements.push({ kind: "Service", name: m[2]?.trim() || m[1]! });
+  }
+  for (const m of code.matchAll(/^\s*junction\s+(\w+)/gm)) {
+    elements.push({ kind: "Junction", name: m[1]! });
+  }
+  return elements;
+}
+
+function parseBlock(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const colMatch = /^\s*columns\s+(\d+)/im.exec(code);
+  if (colMatch) {
+    elements.push({ kind: "Layout", name: `${colMatch[1]} columns` });
+  }
+  for (const m of code.matchAll(/^\s*(\w+)\["([^"]+)"\]/gm)) {
+    elements.push({ kind: "Block", name: m[2]!, detail: m[1] });
+  }
+  return elements;
+}
+
+function parseRequirement(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  for (const m of code.matchAll(/^\s*(?:requirement|functionalRequirement|performanceRequirement|interfaceRequirement|physicalRequirement|designConstraint)\s+(\w[\w ]*?)\s*\{/gm)) {
+    elements.push({ kind: "Requirement", name: m[1]!.trim() });
+  }
+  for (const m of code.matchAll(/^\s*element\s+(\w[\w ]*?)\s*\{/gm)) {
+    elements.push({ kind: "Element", name: m[1]!.trim() });
+  }
+  return elements;
+}
+
+function parseQuadrant(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const titleMatch = /^\s*title\s+(.+)/im.exec(code);
+  if (titleMatch) elements.push({ kind: "Title", name: titleMatch[1]!.trim() });
+  for (const m of code.matchAll(/^\s*([\w ]+?):\s*\[([^\]]+)\]/gm)) {
+    elements.push({ kind: "Point", name: m[1]!.trim(), detail: m[2]!.trim() });
+  }
+  return elements;
+}
+
+function parseSankey(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const nodes = new Set<string>();
+  for (const m of code.matchAll(/^\s*(\S[^,]*?)\s*,\s*(\S[^,]*?)\s*,\s*(\d+)/gm)) {
+    const src = m[1]!.trim();
+    const tgt = m[2]!.trim();
+    if (!nodes.has(src)) { nodes.add(src); elements.push({ kind: "Node", name: src }); }
+    if (!nodes.has(tgt)) { nodes.add(tgt); elements.push({ kind: "Node", name: tgt }); }
+    elements.push({ kind: "Flow", name: `${src} -> ${tgt}`, detail: m[3] });
+  }
+  return elements;
+}
+
+function parseXYChart(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const titleMatch = /^\s*title\s+"?([^"\n]+)"?/im.exec(code);
+  if (titleMatch) elements.push({ kind: "Title", name: titleMatch[1]!.trim() });
+  const xMatch = /^\s*x-axis\s+(.+)/im.exec(code);
+  if (xMatch) elements.push({ kind: "X Axis", name: xMatch[1]!.trim() });
+  const yMatch = /^\s*y-axis\s+(.+)/im.exec(code);
+  if (yMatch) elements.push({ kind: "Y Axis", name: yMatch[1]!.trim() });
+  for (const m of code.matchAll(/^\s*(bar|line)\s+\[([^\]]+)\]/gim)) {
+    elements.push({ kind: m[1]!.charAt(0).toUpperCase() + m[1]!.slice(1), name: m[2]!.trim() });
+  }
+  return elements;
+}
+
+function parseRadar(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const titleMatch = /^\s*title\s+"?([^"\n]+)"?/im.exec(code);
+  if (titleMatch) elements.push({ kind: "Title", name: titleMatch[1]!.trim() });
+  const axisMatch = /^\s*axis\s+(.+)/im.exec(code);
+  if (axisMatch) elements.push({ kind: "Axes", name: axisMatch[1]!.trim() });
+  for (const m of code.matchAll(/^\s*curve\s+\w+\["([^"]+)"\]/gm)) {
+    elements.push({ kind: "Curve", name: m[1]! });
+  }
+  return elements;
+}
+
+function parseKanban(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const lines = code.split("\n");
+  for (const line of lines) {
+    if (/^\s*kanban/i.test(line) || !line.trim() || line.trim().startsWith("%%")) continue;
+    const indent = line.search(/\S/);
+    const text = line.trim().replace(/@\{[^}]*\}/, "").trim();
+    if (!text) continue;
+    if (indent <= 2) {
+      elements.push({ kind: "Column", name: text });
+    } else {
+      elements.push({ kind: "Card", name: text });
+    }
+  }
+  return elements;
+}
+
+function parseJourney(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  const titleMatch = /^\s*title\s+(.+)/im.exec(code);
+  if (titleMatch) elements.push({ kind: "Title", name: titleMatch[1]!.trim() });
+  for (const m of code.matchAll(/^\s*section\s+(.+)/gim)) {
+    elements.push({ kind: "Section", name: m[1]!.trim() });
+  }
+  for (const m of code.matchAll(/^\s+([\w ]+?):\s*(\d+)\s*:\s*(.+)/gm)) {
+    elements.push({ kind: "Task", name: m[1]!.trim(), detail: `${m[2]} — ${m[3]!.trim()}` });
+  }
+  return elements;
+}
+
+function parsePacket(code: string): ParsedElement[] {
+  const elements: ParsedElement[] = [];
+  for (const m of code.matchAll(/^\s*(\d+(?:-\d+)?)\s*:\s*"([^"]+)"/gm)) {
+    elements.push({ kind: "Field", name: m[2]!, detail: `bits ${m[1]}` });
+  }
+  return elements;
+}
+
 const parsers: Partial<Record<DiagramType, Parser>> = {
   flowchart: parseFlowchart,
   sequence: parseSequence,
@@ -311,6 +452,17 @@ const parsers: Partial<Record<DiagramType, Parser>> = {
   git: parseGit,
   mindmap: parseMindmap,
   timeline: parseTimeline,
+  c4: parseC4,
+  architecture: parseArchitecture,
+  block: parseBlock,
+  requirement: parseRequirement,
+  quadrant: parseQuadrant,
+  sankey: parseSankey,
+  xychart: parseXYChart,
+  radar: parseRadar,
+  kanban: parseKanban,
+  journey: parseJourney,
+  packet: parsePacket,
 };
 
 export function parseDiagramElements(code: string, type: DiagramType): ParsedElement[] {

@@ -31,6 +31,11 @@ interface KeyboardShortcutHandlers {
   onZoomReset: () => void;
   onShowShortcuts: () => void;
   getExportOptions: () => ExportOptions | null;
+  onCommandPalette?: () => void;
+  onToggleTransparent?: () => void;
+  onExportPdf?: () => void;
+  onShowHistory?: () => void;
+  onSaveTemplate?: () => void;
 }
 
 export function useKeyboardShortcuts({
@@ -43,14 +48,40 @@ export function useKeyboardShortcuts({
   onZoomReset,
   onShowShortcuts,
   getExportOptions,
+  onCommandPalette,
+  onToggleTransparent,
+  onExportPdf,
+  onShowHistory,
+  onSaveTemplate,
 }: KeyboardShortcutHandlers) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
 
+      // Cmd/Ctrl+Shift+P — Command Palette
+      if (mod && e.shiftKey && e.code === "KeyP") {
+        e.preventDefault();
+        onCommandPalette?.();
+        return;
+      }
+
       // Alt-based shortcuts — use e.code (physical key) because
       // macOS Option+key produces special characters in e.key
       if (e.altKey) {
+        // Alt+Shift combos
+        if (e.shiftKey) {
+          if (e.code === "KeyS") {
+            e.preventDefault();
+            onExportPdf?.();
+            return;
+          }
+          if (e.code === "KeyT") {
+            e.preventDefault();
+            onSaveTemplate?.();
+            return;
+          }
+        }
+
         if (e.code === "KeyS") {
           e.preventDefault();
           const opts = getExportOptions();
@@ -87,6 +118,18 @@ export function useKeyboardShortcuts({
           onZoomReset();
           return;
         }
+
+        if (e.code === "KeyT") {
+          e.preventDefault();
+          onToggleTransparent?.();
+          return;
+        }
+
+        if (e.code === "KeyH") {
+          e.preventDefault();
+          onShowHistory?.();
+          return;
+        }
       }
 
       // Ctrl/⌘-based shortcuts — use e.code for consistency
@@ -112,5 +155,5 @@ export function useKeyboardShortcuts({
 
     globalThis.addEventListener("keydown", handler);
     return () => globalThis.removeEventListener("keydown", handler);
-  }, [onNewTab, onCloseTab, onPrevTab, onNextTab, onZoomIn, onZoomOut, onZoomReset, onShowShortcuts, getExportOptions]);
+  }, [onNewTab, onCloseTab, onPrevTab, onNextTab, onZoomIn, onZoomOut, onZoomReset, onShowShortcuts, getExportOptions, onCommandPalette, onToggleTransparent, onExportPdf, onShowHistory, onSaveTemplate]);
 }

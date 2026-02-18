@@ -1,4 +1,6 @@
 import type { TabState, MermaidTheme, Theme, ShareState, ExportOptions, Exporter } from "../models";
+import type { DiagramSnapshot } from "../models/History";
+import type { Template } from "../utils/templates";
 
 export interface IStorageService {
   loadTabState(): TabState;
@@ -28,4 +30,16 @@ export interface IFileService {
 
 export interface IClipboardService {
   writeText(text: string): Promise<void>;
+}
+
+export interface IHistoryService {
+  getSnapshots(tabId: string): DiagramSnapshot[];
+  addSnapshot(tabId: string, code: string): void;
+  clearHistory(tabId: string): void;
+}
+
+export interface ICustomTemplateService {
+  getTemplates(): Template[];
+  addTemplate(template: Template): void;
+  deleteTemplate(name: string): void;
 }

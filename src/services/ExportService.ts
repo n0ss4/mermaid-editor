@@ -4,13 +4,18 @@ import { pngExporter } from "../export/png";
 import { svgExporter } from "../export/svg";
 import { clipboardExporter } from "../export/clipboard";
 import { clipboardSvgExporter } from "../export/clipboard-svg";
+import { pdfExporter } from "../export/pdf";
+import { embedImgExporter, embedIframeExporter } from "../export/embed";
 
 export class ExportService implements IExportService {
   private readonly exporters: Exporter[] = [
     pngExporter,
     svgExporter,
+    pdfExporter,
     clipboardExporter,
     clipboardSvgExporter,
+    embedImgExporter,
+    embedIframeExporter,
   ];
 
   getExporters(): Exporter[] {

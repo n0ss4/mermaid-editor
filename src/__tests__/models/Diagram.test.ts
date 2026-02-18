@@ -65,6 +65,66 @@ describe("detectDiagramType", () => {
   test("returns unknown for only comments", () => {
     expect(detectDiagramType("%% just a comment")).toBe("unknown");
   });
+
+  test("detects C4Context", () => {
+    expect(detectDiagramType('C4Context\n  Person(user, "User")')).toBe("c4");
+  });
+
+  test("detects C4Container", () => {
+    expect(detectDiagramType('C4Container\n  Container(web, "Web")')).toBe("c4");
+  });
+
+  test("detects C4Component", () => {
+    expect(detectDiagramType('C4Component\n  Component(api, "API")')).toBe("c4");
+  });
+
+  test("detects C4Dynamic", () => {
+    expect(detectDiagramType("C4Dynamic\n  Rel(a, b, msg)")).toBe("c4");
+  });
+
+  test("detects C4Deployment", () => {
+    expect(detectDiagramType("C4Deployment\n  Node(n, label)")).toBe("c4");
+  });
+
+  test("detects architecture-beta", () => {
+    expect(detectDiagramType("architecture-beta\n  group cloud")).toBe("architecture");
+  });
+
+  test("detects block-beta", () => {
+    expect(detectDiagramType("block-beta\n  columns 3")).toBe("block");
+  });
+
+  test("detects requirementDiagram", () => {
+    expect(detectDiagramType("requirementDiagram\n  requirement r1")).toBe("requirement");
+  });
+
+  test("detects quadrantChart", () => {
+    expect(detectDiagramType("quadrantChart\n  title Chart")).toBe("quadrant");
+  });
+
+  test("detects sankey-beta", () => {
+    expect(detectDiagramType("sankey-beta\n\n  A,B,10")).toBe("sankey");
+  });
+
+  test("detects xychart-beta", () => {
+    expect(detectDiagramType('xychart-beta\n  title "Chart"')).toBe("xychart");
+  });
+
+  test("detects radar-beta", () => {
+    expect(detectDiagramType('radar-beta\n  title "Skills"')).toBe("radar");
+  });
+
+  test("detects kanban", () => {
+    expect(detectDiagramType("kanban\n  Todo\n    Task 1")).toBe("kanban");
+  });
+
+  test("detects journey", () => {
+    expect(detectDiagramType("journey\n  title My Journey")).toBe("journey");
+  });
+
+  test("detects packet-beta", () => {
+    expect(detectDiagramType('packet-beta\n  0-15: "Source Port"')).toBe("packet");
+  });
 });
 
 describe("parseSvgDimensions", () => {

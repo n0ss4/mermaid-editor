@@ -10,14 +10,20 @@ const mod = isMac ? "\u2318" : "Ctrl";
 const alt = isMac ? "\u2325" : "Alt";
 
 const SHORTCUTS = [
+  { description: "Command Palette", keys: [mod, "Shift", "P"] },
   { description: "New tab", keys: [alt, "N"] },
   { description: "Close tab", keys: [alt, "W"] },
   { description: "Previous tab", keys: [mod, "Shift", "["] },
   { description: "Next tab", keys: [mod, "Shift", "]"] },
   { description: "Save as PNG", keys: [alt, "S"] },
+  { description: "Export PDF", keys: [alt, "Shift", "S"] },
+  { description: "Toggle transparent BG", keys: [alt, "T"] },
+  { description: "Save as template", keys: [alt, "Shift", "T"] },
+  { description: "Version history", keys: [alt, "H"] },
   { description: "Zoom in", keys: [alt, "+"] },
   { description: "Zoom out", keys: [alt, "\u2212"] },
   { description: "Fit to view", keys: [alt, "0"] },
+  { description: "Find / Replace", keys: [mod, "F"] },
   { description: "Keyboard shortcuts", keys: [mod, "/"] },
 ];
 

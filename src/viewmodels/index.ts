@@ -16,6 +16,15 @@ export { useGestureControl } from "./useGestureControl";
 export type { ExportViewModelValue } from "./ExportViewModel";
 export { useExportViewModel } from "./ExportViewModel";
 
+export type { CommandPaletteViewModelValue } from "./CommandPaletteViewModel";
+export { useCommandPaletteViewModel } from "./CommandPaletteViewModel";
+
+export type { HistoryViewModelValue } from "./HistoryViewModel";
+export { useHistoryViewModel } from "./HistoryViewModel";
+
+export type { CustomTemplateViewModelValue } from "./CustomTemplateViewModel";
+export { useCustomTemplateViewModel } from "./CustomTemplateViewModel";
+
 export { useUrlHydration, useKeyboardShortcuts } from "./AppViewModel";
 
 export { ServiceProvider, useServices } from "./providers/ServiceProvider";

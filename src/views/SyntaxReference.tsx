@@ -7,6 +7,7 @@ import type { ParsedElement } from "../utils/parseDiagramElements";
 interface SyntaxReferenceProps {
   readonly diagramType: DiagramType;
   readonly parsedElements: ParsedElement[];
+  readonly onToggleOutline?: () => void;
 }
 
 const TYPE_LABELS: Record<DiagramType, string> = {
@@ -20,10 +21,21 @@ const TYPE_LABELS: Record<DiagramType, string> = {
   git: "Git Graph",
   mindmap: "Mindmap",
   timeline: "Timeline",
+  c4: "C4",
+  architecture: "Architecture",
+  block: "Block",
+  requirement: "Requirement",
+  quadrant: "Quadrant",
+  sankey: "Sankey",
+  xychart: "XY Chart",
+  radar: "Radar",
+  kanban: "Kanban",
+  journey: "Journey",
+  packet: "Packet",
   unknown: "Diagram",
 };
 
-export function SyntaxReference({ diagramType, parsedElements }: SyntaxReferenceProps) {
+export function SyntaxReference({ diagramType, parsedElements, onToggleOutline }: SyntaxReferenceProps) {
   const [open, setOpen] = useState(false);
   const entries = SYNTAX_REFERENCE[diagramType];
 
@@ -35,6 +47,15 @@ export function SyntaxReference({ diagramType, parsedElements }: SyntaxReference
       >
         <HelpCircle size={13} />
         <span>{TYPE_LABELS[diagramType]} Syntax</span>
+        <span style={{ flex: 1 }} />
+        {onToggleOutline && (
+          <span
+            className="syntax-ref-outline-link"
+            onClick={(e) => { e.stopPropagation(); onToggleOutline(); }}
+          >
+            Outline
+          </span>
+        )}
         {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
       </button>
       {open && (

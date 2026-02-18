@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Download, Clipboard } from "lucide-react";
+import { ChevronDown, Download, Clipboard, Package } from "lucide-react";
 import type { Exporter } from "../models";
 import type { ExportViewModelValue } from "../viewmodels";
 import { useToast } from "../viewmodels/providers/ToastProvider";
 
 interface ExportDropdownProps {
   readonly vm: ExportViewModelValue;
+  readonly transparentBg?: boolean;
+  readonly onToggleTransparent?: () => void;
+  readonly onBatchExport?: () => void;
 }
 
-export function ExportDropdown({ vm }: ExportDropdownProps) {
+export function ExportDropdown({ vm, transparentBg, onToggleTransparent, onBatchExport }: ExportDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
@@ -55,6 +58,19 @@ export function ExportDropdown({ vm }: ExportDropdownProps) {
       </button>
       {open && (
         <div className="export-dropdown-menu">
+          {onToggleTransparent && (
+            <>
+              <div className="export-dropdown-row">
+                <label>Transparent BG</label>
+                <input
+                  type="checkbox"
+                  checked={transparentBg ?? false}
+                  onChange={onToggleTransparent}
+                />
+              </div>
+              <div className="export-dropdown-divider" />
+            </>
+          )}
           {downloadExporters.map((exp) => (
             <button
               key={`dl-${exp.name}`}
@@ -74,6 +90,21 @@ export function ExportDropdown({ vm }: ExportDropdownProps) {
               <Clipboard size={13} /> Copy {exp.name}
             </button>
           ))}
+          {onBatchExport && (
+            <>
+              <div className="export-dropdown-divider" />
+              <button
+                className="export-dropdown-item"
+                onClick={() => {
+                  onBatchExport();
+                  setOpen(false);
+                  showToast("Exporting all tabs...");
+                }}
+              >
+                <Package size={13} /> Export All (ZIP)
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
