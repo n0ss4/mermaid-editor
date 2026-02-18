@@ -5,6 +5,7 @@ import { ThemeProvider } from "./ThemeProvider";
 import { TabProvider } from "./TabProvider";
 import { EditorProvider } from "./EditorProvider";
 import { ToastProvider } from "./ToastProvider";
+import { DiagramComposerProvider } from "./DiagramComposerProvider";
 
 export function AppProvider({
   registry,
@@ -18,9 +19,11 @@ export function AppProvider({
       <ServiceProvider registry={registry}>
         <ThemeProvider>
           <TabProvider>
-            <EditorProvider>
-              {children}
-            </EditorProvider>
+            <DiagramComposerProvider>
+              <EditorProvider>
+                {children}
+              </EditorProvider>
+            </DiagramComposerProvider>
           </TabProvider>
         </ThemeProvider>
       </ServiceProvider>

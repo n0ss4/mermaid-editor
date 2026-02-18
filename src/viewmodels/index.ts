@@ -24,6 +24,8 @@ export { useHistoryViewModel } from "./HistoryViewModel";
 
 export type { CustomTemplateViewModelValue } from "./CustomTemplateViewModel";
 export { useCustomTemplateViewModel } from "./CustomTemplateViewModel";
+export type { DiagramComposerViewModelValue, ComposerSelection } from "./DiagramComposerViewModel";
+export { useDiagramComposerViewModel } from "./DiagramComposerViewModel";
 
 export { useUrlHydration, useKeyboardShortcuts } from "./AppViewModel";
 
@@ -31,5 +33,6 @@ export { ServiceProvider, useServices } from "./providers/ServiceProvider";
 export { ThemeProvider, useThemeVM } from "./providers/ThemeProvider";
 export { TabProvider, useTabVM } from "./providers/TabProvider";
 export { EditorProvider, useEditorVM } from "./providers/EditorProvider";
+export { DiagramComposerProvider, useDiagramComposerVM } from "./providers/DiagramComposerProvider";
 export { AppProvider } from "./providers/AppProvider";
 export { ToastProvider, useToast } from "./providers/ToastProvider";

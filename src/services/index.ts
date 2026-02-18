@@ -7,6 +7,7 @@ export type {
   IClipboardService,
   IHistoryService,
   ICustomTemplateService,
+  IDiagramDocumentService,
 } from "./interfaces";
 
 export { StorageService } from "./StorageService";
@@ -17,6 +18,7 @@ export { FileService } from "./FileService";
 export { ClipboardService } from "./ClipboardService";
 export { HistoryService } from "./HistoryService";
 export { CustomTemplateService } from "./CustomTemplateService";
+export { DiagramDocumentService } from "./DiagramDocumentService";
 
 export type { ServiceRegistry } from "./registry";
 export { createServiceRegistry } from "./registry";

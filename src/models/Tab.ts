@@ -1,4 +1,7 @@
 import type { MermaidTheme } from "./Theme";
+import type { DiagramDocument } from "../domain/diagram";
+
+export type EditorMode = "text" | "split" | "visual";
 
 export interface Tab {
   id: string;
@@ -6,6 +9,8 @@ export interface Tab {
   code: string;
   mermaidTheme: MermaidTheme;
   exportScale: number;
+  editorMode?: EditorMode;
+  docCache?: DiagramDocument;
   createdAt: number;
 }
 

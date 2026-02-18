@@ -1,6 +1,7 @@
 import type { TabState, MermaidTheme, Theme, ShareState, ExportOptions, Exporter } from "../models";
 import type { DiagramSnapshot } from "../models/History";
 import type { Template } from "../utils/templates";
+import type { DiagramDocument, ParseResult, ValidationIssue } from "../domain/diagram";
 
 export interface IStorageService {
   loadTabState(): TabState;
@@ -42,4 +43,10 @@ export interface ICustomTemplateService {
   getTemplates(): Template[];
   addTemplate(template: Template): void;
   deleteTemplate(name: string): void;
+}
+
+export interface IDiagramDocumentService {
+  parseFlowchart(code: string): ParseResult;
+  serializeFlowchart(doc: DiagramDocument): string;
+  validate(doc: DiagramDocument): ValidationIssue[];
 }

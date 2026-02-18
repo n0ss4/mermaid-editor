@@ -212,6 +212,11 @@ body {
   min-height: 0;
 }
 
+.editor-column > .panel.editor-panel {
+  flex: 1;
+  min-height: 0;
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr !important;
@@ -520,6 +525,12 @@ button:active {
 
 .btn-secondary:hover {
   background: var(--surface-hover);
+}
+
+.btn-secondary.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
 }
 
 .btn-secondary:disabled {
@@ -1421,4 +1432,243 @@ button:active {
     gap: 4px;
   }
   .command-palette { max-width: 100%; margin-top: 0; }
+}
+
+/* Diagram composer */
+.editor-mode-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.editor-mode-toggle .btn-secondary.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.direction-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.composer-controls {
+  display: none;
+}
+
+.composer-controls.open {
+  display: flex;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 8px;
+  z-index: 20;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 190px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  gap: 6px;
+}
+
+[data-theme="dark"] .composer-controls.open {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.composer-controls.open .direction-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.composer-controls.open .btn-secondary,
+.composer-controls.open .btn-icon {
+  width: 100%;
+  justify-content: center;
+}
+
+.composer-controls.open .direction-label {
+  font-size: 11px;
+}
+
+.composer-tools-btn {
+  display: inline-flex;
+}
+
+.visual-panel {
+  margin-top: 8px;
+  min-height: 420px;
+  flex: 1;
+}
+
+.visual-panel .panel-header {
+  position: relative;
+}
+
+.composer-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  border: none;
+  border-radius: 0;
+  margin-top: 0;
+}
+
+.composer-fullscreen .diagram-canvas-wrap {
+  min-height: 0;
+}
+
+.composer-fullscreen .diagram-canvas {
+  min-height: 0;
+}
+
+.split-panel {
+  flex: 1;
+  min-height: 300px;
+}
+
+.diagram-canvas-wrap {
+  flex: 1;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+.diagram-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  background:
+    radial-gradient(circle, var(--preview-dot) 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+  color: var(--text-secondary);
+}
+
+.diagram-canvas-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.diagram-canvas-zoom-label {
+  min-width: 44px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.diagram-edge line {
+  stroke: var(--text-secondary);
+}
+
+.diagram-edge .edge-selected {
+  stroke: var(--accent);
+}
+
+.edge-label {
+  fill: var(--text-secondary);
+  font-size: 12px;
+}
+
+.diagram-node rect,
+.diagram-node polygon {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.diagram-node text {
+  fill: var(--text);
+  font-size: 12px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.diagram-node-inline-input {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  padding: 2px 4px;
+  outline: none;
+}
+
+.diagram-node.node-selected rect,
+.diagram-node.node-selected polygon {
+  stroke: var(--accent);
+}
+
+.diagram-canvas-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.composer-inspector {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.composer-inspector label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.composer-inspector input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.composer-warnings {
+  border-top: 1px solid var(--border);
+  padding: 8px 12px;
+  background: var(--error-bg);
+}
+
+.composer-warnings p {
+  font-size: 11px;
+  color: var(--error);
+}
+
+.composer-warnings-inline {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+}
+
+@media (max-width: 768px) {
+  .visual-panel .panel-header {
+    position: relative;
+  }
+
+  .composer-warnings-inline {
+    font-size: 11px;
+    margin: 4px 0 8px;
+  }
 }

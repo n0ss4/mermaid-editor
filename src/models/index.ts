@@ -1,4 +1,4 @@
-export type { Tab, TabState, TabAction } from "./Tab";
+export type { Tab, TabState, TabAction, EditorMode } from "./Tab";
 export { MAX_TABS, createTab, tabReducer } from "./Tab";
 
 export type { Theme, MermaidTheme } from "./Theme";

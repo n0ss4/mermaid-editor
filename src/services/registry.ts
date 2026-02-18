@@ -7,6 +7,7 @@ import type {
   IClipboardService,
   IHistoryService,
   ICustomTemplateService,
+  IDiagramDocumentService,
 } from "./interfaces";
 import { StorageService } from "./StorageService";
 import { MermaidRenderService } from "./MermaidRenderService";
@@ -16,6 +17,7 @@ import { FileService } from "./FileService";
 import { ClipboardService } from "./ClipboardService";
 import { HistoryService } from "./HistoryService";
 import { CustomTemplateService } from "./CustomTemplateService";
+import { DiagramDocumentService } from "./DiagramDocumentService";
 
 export interface ServiceRegistry {
   storage: IStorageService;
@@ -26,6 +28,7 @@ export interface ServiceRegistry {
   clipboard: IClipboardService;
   history: IHistoryService;
   customTemplates: ICustomTemplateService;
+  diagramDocument: IDiagramDocumentService;
 }
 
 export function createServiceRegistry(): ServiceRegistry {
@@ -38,5 +41,6 @@ export function createServiceRegistry(): ServiceRegistry {
     clipboard: new ClipboardService(),
     history: new HistoryService(),
     customTemplates: new CustomTemplateService(),
+    diagramDocument: new DiagramDocumentService(),
   };
 }
